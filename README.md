@@ -4,98 +4,108 @@
 
 ## 🚀 功能特性
 
-### 核心功能
 - **自动扫描**: 支持CodeQL、Semgrep等多种扫描工具
-- **智能队列**: 扫描任务自动排队，避免资源冲突
+- **智能队列**: 扫描任务自动排队，避免资源冲突  
 - **报告解析**: 自动解析SARIF格式报告
 - **漏洞管理**: 完整的漏洞生命周期管理
 - **统计分析**: 丰富的安全统计和报告功能
-
-### AI增强功能 (可选)
-- **智能分析**: 支持多种AI服务接入进行漏洞分析
-- **自动翻译**: 支持多种翻译服务的漏洞信息翻译
-- **风险评估**: AI辅助的风险评估和修复建议
-
-## 📁 目录结构
-
-```
-smart_security_analyzer/
-├── workspace/                 # 工作空间目录
-│   ├── scan_temp/            # 扫描临时文件
-│   ├── reports/              # 扫描报告输出
-│   └── projects/             # 项目源码存储
-├── tools/                    # 扫描工具目录
-│   ├── codeql/              # CodeQL扫描工具 (需自行安装)
-│   ├── codeql-rules/        # CodeQL扫描规则 (需自行安装)
-│   └── jdk/                 # JDK工具 (需自行安装)
-├── logs/                    # 日志文件
-├── static/                  # 静态文件
-├── templates/               # 模板文件
-├── core/                    # 核心应用
-├── api/                     # API应用
-├── parsers/                 # 解析器
-├── ai_analysis/             # AI分析 (可选)
-├── translation/             # 翻译服务 (可选)
-└── statistics/              # 统计服务
-```
+- **AI增强**: 支持多种AI服务接入进行漏洞分析 (可选)
+- **动态刷新**: 自动检测并加载新的报告文件
 
 ## 🛠️ 快速开始
 
 ### 仅用于报告展示
 
-如果您只需要展示已有的扫描报告，无需进行实际扫描，可以：
+如果您只需要展示已有的扫描报告，无需进行实际扫描：
 
-1. **放置报告文件**: 将SARIF格式的扫描报告放到 `workspace/reports/` 目录下
-2. **放置源代码**: 将对应的源代码文件放到 `workspace/projects/` 目录下
-3. **启动平台**: 按照下面的步骤启动平台即可完成报告展示
+1. **放置文件**: 将SARIF报告放到 `workspace/reports/`，源代码放到 `workspace/projects/`
+2. **一键安装**: `./install.sh`
+3. **启动平台**: `./platform.sh start`
+4. **访问平台**: http://localhost:7000
 
-目录结构示例：
-```
-workspace/
-├── reports/
-│   └── your-project/
-│       └── scan-report.sarif
-└── projects/
-    └── your-project/
-        └── src/
-```
-
-### 1. 环境准备
+### 完整安装使用
 
 ```bash
-# 克隆项目
-git clone <repository-url>
-cd smart_security_analyzer
+# 1. 克隆项目
+git clone https://github.com/jhonxie369-star/smart_security_analyzer_opensource.git
+cd smart_security_analyzer_opensource
 
-# 创建虚拟环境
-python3 -m venv venv
-source venv/bin/activate  # Linux/Mac
+# 2. 一键安装
+./install.sh
 
-# 安装基础依赖
-pip install -r requirements.txt
+# 3. 启动平台
+./platform.sh start
+
+# 4. 访问平台
+# 浏览器打开: http://localhost:7000
 ```
 
-### 2. 扫描工具安装
+## 📋 平台管理
 
-#### CodeQL 安装
+使用 `platform.sh` 脚本管理平台：
+
 ```bash
-# 下载 CodeQL CLI 到 tools/codeql/ 目录
-# 访问: https://github.com/github/codeql-cli-binaries/releases
+# 平台控制
+./platform.sh start      # 启动平台
+./platform.sh stop       # 停止平台  
+./platform.sh restart    # 重启平台
+./platform.sh status     # 查看状态
+./platform.sh logs       # 查看日志
 
-# 下载 CodeQL 查询规则到 tools/codeql-rules/ 目录  
-# 访问: https://github.com/github/codeql
+# 数据管理
+./platform.sh init       # 初始化数据
+./platform.sh import     # 导入报告
+./platform.sh clean      # 清理数据
 ```
 
-#### Semgrep 安装
+## 🔧 扫描工具配置 (可选)
+
+如需进行实际扫描，请安装相应工具：
+
+### CodeQL
+```bash
+# 下载到 tools/codeql/ 目录
+# https://github.com/github/codeql-cli-binaries/releases
+```
+
+### Semgrep  
 ```bash
 pip install semgrep
 ```
 
-#### JDK 安装 (Java项目需要)
-```bash
-# 创建软链接到系统JDK
-ln -s /usr/lib/jvm/java-11-openjdk-amd64 tools/jdk
+## 📁 目录结构
+
 ```
+smart_security_analyzer/
+├── workspace/           # 工作空间
+│   ├── reports/        # 扫描报告 (SARIF格式)
+│   └── projects/       # 项目源码
+├── tools/              # 扫描工具 (需自行安装)
+├── *.sh               # 管理脚本
+└── README.md          # 说明文档
+```
+
+## 🌟 特色功能
+
+- **零配置启动**: 一键安装和启动
+- **自动发现**: 动态检测workspace中的新报告
+- **智能解析**: 自动解析多种格式的安全报告
+- **可视化展示**: 丰富的图表和统计信息
+- **AI辅助**: 可选的AI分析和翻译功能
+
+## 📝 更多文档
+
+- [开发指南](DEVELOPMENT_GUIDE.md)
+- [构建配置](BUILD_CONFIG_USAGE.md)
+- [项目开发](PROJECT_DEVELOPMENT_GUIDE.md)
+
+## 🤝 贡献
+
+欢迎提交Issue和Pull Request！
+
+## 📄 许可证
+
+MIT License
 
 ### 3. 数据库配置
 
