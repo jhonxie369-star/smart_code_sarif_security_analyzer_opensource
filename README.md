@@ -91,13 +91,12 @@ smart_security_analyzer/
 - **自动发现**: 动态检测workspace中的新报告
 - **智能解析**: 自动解析多种格式的安全报告
 - **可视化展示**: 丰富的图表和统计信息
-- **AI辅助**: 可选的AI分析和翻译功能
+- **AI辅助**: 可选的AI分析功能，默认支持翻译功能
 
 ## 📝 更多文档
 
-- [开发指南](DEVELOPMENT_GUIDE.md)
-- [构建配置](BUILD_CONFIG_USAGE.md)
-- [项目开发](PROJECT_DEVELOPMENT_GUIDE.md)
+- [项目开发指南](PROJECT_DEVELOPMENT_GUIDE.md)
+- [构建配置说明](BUILD_CONFIG_USAGE.md)
 
 ## 🤝 贡献
 
@@ -106,33 +105,6 @@ smart_security_analyzer/
 ## 📄 许可证
 
 MIT License
-
-### 3. 数据库配置
-
-```bash
-# 安装 PostgreSQL
-sudo apt-get install postgresql postgresql-contrib
-
-# 创建数据库
-sudo -u postgres createdb smart_security_analyzer
-
-# 配置环境变量
-cp .env.example .env
-# 编辑 .env 文件中的数据库配置
-```
-
-### 4. 初始化应用
-
-```bash
-# 运行数据库迁移
-python manage.py migrate
-
-# 创建超级用户
-python manage.py createsuperuser
-
-# 启动服务
-python manage.py runserver 0.0.0.0:7000
-```
 
 ## 🎯 使用指南
 
@@ -153,7 +125,7 @@ python manage.py runserver 0.0.0.0:7000
 如需使用AI分析功能，请自行修改 `ai_analysis/services.py` 脚本接入所需的AI服务。
 
 ### 翻译功能  
-如需使用翻译功能，请自行修改 `translation/services.py` 脚本接入所需的翻译服务。
+平台默认支持翻译功能，如需自定义翻译服务，可修改 `translation/services.py` 脚本。
 
 ## 📚 更多文档
 

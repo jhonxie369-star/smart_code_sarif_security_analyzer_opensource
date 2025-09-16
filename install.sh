@@ -57,6 +57,7 @@ mkdir -p templates
 
 # 设置环境变量
 echo "设置环境变量..."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cat > .env << EOF
 # 数据库配置
 DB_NAME=smart_security_analyzer
@@ -66,12 +67,8 @@ DB_HOST=localhost
 DB_PORT=5432
 
 # 报告路径配置
-REPORT_BASE_PATH=/home/ubuntu/chaomeng/output
-PROJECT_BASE_PATH=/home/ubuntu/chaomeng/project
-
-# AI配置
-OPENAI_API_KEY=your-openai-api-key-here
-OPENAI_MODEL=gpt-3.5-turbo
+REPORT_BASE_PATH=${SCRIPT_DIR}/workspace/reports
+PROJECT_BASE_PATH=${SCRIPT_DIR}/workspace/projects
 
 # Django配置
 DEBUG=True
