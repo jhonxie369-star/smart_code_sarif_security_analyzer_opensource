@@ -9,7 +9,7 @@
 - **报告解析**: 自动解析SARIF格式报告
 - **漏洞管理**: 完整的漏洞生命周期管理
 - **统计分析**: 丰富的安全统计和报告功能
-- **AI增强**: 支持多种AI服务接入进行漏洞分析 (可选)
+- **AI增强**: 提供AI分析框架，用户可自行改造 `ai_analysis/services.py` 脚本接入所需AI服务 (可选)
 - **动态刷新**: 自动检测并加载新的报告文件
 
 ## 🛠️ 快速开始
@@ -147,57 +147,23 @@ python manage.py runserver 0.0.0.0:7000
 
 ## 🔧 AI功能配置 (可选)
 
+## 🔧 自定义配置 (可选)
+
 ### AI分析功能
+如需使用AI分析功能，请自行修改 `ai_analysis/services.py` 脚本接入所需的AI服务。
 
-支持多种AI服务：
+### 翻译功能  
+如需使用翻译功能，请自行修改 `translation/services.py` 脚本接入所需的翻译服务。
 
-#### OpenAI 配置
-```bash
-pip install openai
+## 📚 更多文档
 
-# 在 .env 中配置
-AI_PROVIDER=openai
-OPENAI_API_KEY=your-api-key
-OPENAI_MODEL=gpt-3.5-turbo
-```
-
-#### Azure OpenAI 配置
-```bash
-pip install openai
-
-# 在 .env 中配置
-AI_PROVIDER=azure
-AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
-AZURE_OPENAI_KEY=your-key
-```
-
-### 翻译功能
-
-#### Google翻译 (免费)
-```bash
-pip install googletrans==4.0.0rc1
-
-# 在 .env 中配置
-TRANSLATION_PROVIDER=google
-```
-
-#### 本地翻译模型
-```bash
-pip install transformers torch
-
-# 在 .env 中配置  
-TRANSLATION_PROVIDER=local
-```
-
-## 📚 详细文档
-
-- [完整安装指南](README_OPENSOURCE.md)
 - [开发指南](DEVELOPMENT_GUIDE.md)
-- [项目开发指南](PROJECT_DEVELOPMENT_GUIDE.md)
+- [构建配置](BUILD_CONFIG_USAGE.md)
+- [项目开发](PROJECT_DEVELOPMENT_GUIDE.md)
 
 ## 🤝 贡献
 
-欢迎提交 Issue 和 Pull Request！
+欢迎提交Issue和Pull Request！
 
 ## 📄 许可证
 
