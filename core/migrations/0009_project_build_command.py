@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0008_buildconfig_project_build_config'),
+        ('core', '0007_alter_finding_severity_alter_project_git_branch'),
     ]
 
     operations = [

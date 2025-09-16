@@ -4,42 +4,57 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Django
 *.log
 local_settings.py
 db.sqlite3
-media/
-staticfiles/
+db.sqlite3-journal
 
 # Environment variables
 .env
+.venv
+env/
+venv/
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
+Thumbs.db
 
 # Project specific
 workspace/reports/*
 workspace/projects/*
 workspace/scan_temp/*
-logs/*.log
-tools/codeql/
-tools/codeql-rules/
-tools/jdk/
-uploads/*
-exports/*
+logs/
+media/
+staticfiles/
+static/
 
-# Keep directory structure
+# Keep directory structure but ignore contents
 !workspace/reports/.gitkeep
 !workspace/projects/.gitkeep
 !workspace/scan_temp/.gitkeep
 !logs/.gitkeep
-!uploads/.gitkeep
-!exports/.gitkeep
+!media/.gitkeep
+!staticfiles/.gitkeep

@@ -23,6 +23,10 @@
 3. **启动平台**: `./platform.sh start`
 4. **访问平台**: http://localhost:7000
 
+**默认登录信息:**
+- 用户名: `admin`
+- 密码: `admin123`
+
 ### 完整安装使用
 
 ```bash
@@ -36,7 +40,7 @@ cd smart_security_analyzer_opensource
 # 3. 启动平台
 ./platform.sh start
 
-# 4. 访问平台
+# 4. 访问平台 (默认用户名: admin, 密码: admin123)
 # 浏览器打开: http://localhost:7000
 ```
 
@@ -114,8 +118,98 @@ MIT License
 ### 管理界面  
 访问 `http://localhost:7000/admin/` 进行系统管理
 
-### 任务监控
-访问 `http://localhost:7000/api/task-monitor/` 查看扫描任务
+## 🎯 数据管理
+
+### 默认管理员账户
+安装完成后，系统会自动创建默认管理员账户：
+- **用户名**: `admin`
+- **密码**: `admin123`
+- **登录地址**: http://localhost:7000/admin/
+
+⚠️ **安全提醒**: 生产环境请立即修改默认密码！
+
+### 数据管理命令
+
+#### 1. 初始化数据 - `./platform.sh init`
+**功能**: 增量初始化部门和项目
+- 扫描 `workspace/reports/` 目录结构
+- 根据目录结构自动创建部门和项目
+- 只添加数据库中不存在的新项目
+- 不会删除已有数据
+
+**使用场景**:
+- 首次部署后初始化项目结构
+- 添加新项目到系统中
+- 恢复意外删除的项目记录
+
+#### 2. 导入报告 - `./platform.sh import`
+**功能**: 增量导入SARIF报告文件
+- 扫描 `workspace/reports/` 下的所有 `.sarif` 文件
+- 智能检测已导入的报告，避免重复导入
+- 将新漏洞数据导入到对应项目中
+- 自动创建扫描任务记录
+
+**使用场景**:
+- 导入新的扫描报告
+- 日常增量更新漏洞数据
+- 批量导入新报告而不影响已有数据
+
+**相关命令**:
+```bash
+./platform.sh import          # 增量导入（推荐）
+./platform.sh import-force    # 强制重新导入所有报告
+./platform.sh import-preview  # 预览将要导入的报告
+```
+
+#### 3. 清理数据 - `./platform.sh clean`
+**功能**: 清理数据库中不存在的项目
+- 检查数据库中的项目是否在文件系统中存在
+- 删除文件系统中已不存在的项目记录
+- 同时清理相关的扫描任务和漏洞数据
+
+**使用场景**:
+- 清理已删除项目的数据库记录
+- 保持数据库与文件系统同步
+- 释放数据库存储空间
+
+**⚠️ 警告**: 此操作会永久删除数据，请谨慎使用！
+
+### 目录结构要求
+
+为确保源代码定位功能正常工作，**项目目录结构必须与报告目录结构保持一致**：
+
+```
+workspace/
+├── reports/                    # 报告目录
+│   └── 部门名/
+│       └── 项目名/
+│           └── 扫描报告.sarif
+└── projects/                   # 源代码目录
+    └── 部门名/
+        └── 项目名/
+            ├── src/
+            ├── pom.xml
+            └── ...源代码文件
+```
+
+**示例**:
+```
+workspace/
+├── reports/
+│   └── cyber/
+│       └── balance-server/
+│           └── balance-server_codeql_report_20250708.sarif
+└── projects/
+    └── cyber/
+        └── balance-server/
+            ├── src/main/java/
+            ├── pom.xml
+            └── README.md
+```
+
+## 🎯 功能使用
+
+### 快速扫描
 
 ## 🔧 AI功能配置 (可选)
 

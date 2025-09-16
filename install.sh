@@ -8,6 +8,19 @@ echo "=== 智能安全分析平台安装脚本 ==="
 python_version=$(python3 --version 2>&1 | awk '{print $2}')
 echo "Python版本: $python_version"
 
+# 安装PostgreSQL
+echo "安装PostgreSQL..."
+sudo apt-get update
+sudo apt-get install -y postgresql postgresql-contrib
+
+# 启动PostgreSQL服务
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# 创建数据库
+echo "创建数据库..."
+sudo -u postgres createdb smart_security_analyzer_opensource
+
 # 创建虚拟环境
 echo "创建虚拟环境..."
 python3 -m venv venv
@@ -60,7 +73,7 @@ echo "设置环境变量..."
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cat > .env << EOF
 # 数据库配置
-DB_NAME=smart_security_analyzer
+DB_NAME=smart_security_analyzer_opensource
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_HOST=localhost
@@ -85,9 +98,16 @@ echo "创建缓存表..."
 python manage.py createcachetable
 
 # 创建超级用户
-echo "创建超级用户..."
-echo "请按提示创建管理员账户："
-python manage.py createsuperuser
+echo "创建默认超级用户..."
+python manage.py shell -c "
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+    print('✓ 默认超级用户已创建 (用户名: admin, 密码: admin123)')
+else:
+    print('✓ 超级用户已存在')
+"
 
 # 收集静态文件
 echo "收集静态文件..."

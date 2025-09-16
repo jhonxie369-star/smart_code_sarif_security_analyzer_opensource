@@ -149,7 +149,7 @@ class Command(BaseCommand):
         if not self._is_sarif_file(sarif_file):
             return
 
-        self.stdout.write(f'处理文件: {os.path.relpath(sarif_file, report_base)}')
+        self.stdout.write(f'处理文件: {os.path.relpath(sarif_file, settings.REPORT_CONFIG["BASE_PATH"])}')
         self.stdout.write(f'  项目: {dept_name}/{project_name}')
 
         try:
