@@ -34,7 +34,7 @@
 git clone https://github.com/jhonxie369-star/smart_security_analyzer_opensource.git
 cd smart_security_analyzer_opensource
 
-# 2. 一键安装
+# 2. 一键安装（本地机器学习翻译，翻译库很大）
 ./install.sh
 
 # 3. 启动平台
