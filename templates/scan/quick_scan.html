@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速扫描 - 智能代码安全分析平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <script src="/static/js/navigation.js"></script>
+    <style>
+        .scan-card { max-width: 600px; margin: 50px auto; }
+        .git-input { font-family: 'Courier New', monospace; }
+        .scan-progress { display: none; }
+        .log-container { 
+            background: #1e1e1e; 
+            color: #d4d4d4; 
+            font-family: 'Courier New', monospace; 
+            height: 400px; 
+            overflow-y: auto; 
+            padding: 15px; 
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="scan-card">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-outline-light btn-sm me-2" onclick="smartBack()">
+                                <i class="bi bi-arrow-left"></i> 返回
+                            </button>
+                            <h4 class="d-inline mb-0"><i class="bi bi-lightning"></i> 快速扫描</h4>
+                        </div>
+                    </div>
+                    <small>提供Git地址，自动创建项目并扫描</small>
+                </div>
+                
+                <div class="card-body" id="scanForm">
+                    <form id="quickScanForm">
+                        <div class="mb-3">
+                            <label class="form-label">Git仓库地址 *</label>
+                            <input type="text" class="form-control git-input" id="gitUrl" 
+                                   placeholder="git@gitlab.com:user/repo.git" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">分支</label>
+                                <input type="text" class="form-control" id="gitBranch" value="master">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">语言 <small class="text-muted">(可自动检测)</small></label>
+                                <select class="form-select" id="language">
+                                    <option value="">自动检测</option>
+                                    <option value="java">Java</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="php">PHP</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">部门 <small class="text-muted">(可从 Git 自动获取)</small></label>
+                                <select class="form-select" id="department">
+                                    <option value="">自动获取</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">编译命令 <small class="text-muted">(可选，留空使用默认)</small></label>
+                            <textarea class="form-control" id="buildCommand" rows="2" 
+                                      placeholder="例如: mvn clean compile -DskipTests -Dmaven.test.skip=true"></textarea>
+                            <div class="form-text">
+                                Java默认: mvn clean compile -DskipTests<br>
+                                JavaScript默认: npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps<br>
+                                PHP默认: composer install --no-dev --optimize-autoloader (如有composer.json)
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-play-circle"></i> 开始扫描
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-body scan-progress" id="scanProgress">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>扫描进行中...</h5>
+                        <span class="badge bg-primary" id="scanStatus">运行中</span>
+                    </div>
+                    
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                    </div>
+                    
+                    <div class="log-container" id="logContainer" style="display: block;"></div>
+                    
+                    <div class="mt-3 text-center">
+                        <button class="btn btn-outline-secondary" onclick="toggleLogs()">
+                            <span id="logToggle">隐藏日志</span>
+                        </button>
+                        <button class="btn btn-success" id="viewResults" style="display:none;" onclick="viewResults()">
+                            查看结果
+                        </button>
+                        <a href="/api/task-monitor/" class="btn btn-outline-info" target="_blank">
+                            任务监控
+                        </a>
+                        <button class="btn btn-outline-secondary" onclick="checkQueue()">
+                            队列状态
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+        
+        let currentTaskId = null;
+        let currentProjectId = null;
+        let logInterval = null;
+        let lastLine = 0;
+        
+        // 加载部门列表
+        fetch('/api/v1/departments/')
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('department');
+                data.results.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.name;
+                    select.appendChild(option);
+                });
+            });
+        
+        document.getElementById('quickScanForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const gitUrl = document.getElementById('gitUrl').value;
+            const gitBranch = document.getElementById('gitBranch').value || 'master';
+            const departmentId = document.getElementById('department').value;
+            const buildCommand = document.getElementById('buildCommand').value.trim();
+            const selectedLanguage = document.getElementById('language').value;
+            
+            if (!gitUrl) {
+                alert('请填写Git地址');
+                return;
+            }
+            
+            // 从Git URL提取项目名、组织名和代码负责人
+            const urlParts = gitUrl.match(/[\/:]([^\/]+)\/([^\/]+)\.git$/);
+            const orgName = urlParts?.[1] || 'default';
+            const baseProjectName = urlParts?.[2] || 'unknown-project';
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+            const projectName = `${baseProjectName}_${timestamp}`;
+            
+            // 从 Git URL 提取代码负责人（使用组织名作为默认负责人）
+            const codeOwner = orgName;
+            
+            let finalDepartmentId = departmentId;
+            
+            // 显示进度界面
+            document.getElementById('scanForm').style.display = 'none';
+            document.getElementById('scanProgress').style.display = 'block';
+            
+            // 如果没有选择部门，先搜索是否存在同名部门，不存在则创建
+            if (!departmentId) {
+                try {
+                    // 先按名称精确搜索现有部门
+                    const searchResponse = await fetch(`/api/v1/departments/?name=${encodeURIComponent(orgName)}`);
+                    const searchData = await searchResponse.json();
+                    
+                    if (searchData.results && searchData.results.length > 0) {
+                        // 找到现有部门，直接使用
+                        finalDepartmentId = searchData.results[0].id;
+                    } else {
+                        // 没找到，创建新部门
+                        const deptResponse = await fetch('/api/v1/departments/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrftoken
+                            },
+                            body: JSON.stringify({
+                                name: orgName,
+                                description: `从 Git 自动创建: ${orgName}`
+                            })
+                        });
+                        
+                        if (deptResponse.ok) {
+                            const dept = await deptResponse.json();
+                            finalDepartmentId = dept.id;
+                        } else {
+                            alert('无法创建部门');
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    alert('部门处理失败: ' + error);
+                    return;
+                }
+            }
+            
+            // 创建项目并扫描
+            fetch('/api/v1/projects/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({
+                    name: projectName,
+                    department: finalDepartmentId,
+                    git_url: gitUrl,
+                    git_branch: gitBranch,
+                    auto_scan_enabled: true,
+                    code_owner: codeOwner,
+                    build_command: buildCommand
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(JSON.stringify(err));
+                    });
+                }
+                return response.json();
+            })
+            .then(project => {
+                console.log('项目创建结果:', project);
+                currentProjectId = project.id;
+                return fetch(`/api/v1/projects/${project.id}/auto_scan/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        git_url: gitUrl,
+                        branch: gitBranch,
+                        language: selectedLanguage
+                    })
+                });
+            })
+            .catch(error => {
+                console.error('项目创建失败:', error);
+                alert('项目创建失败: ' + error);
+                document.getElementById('scanForm').style.display = 'block';
+                document.getElementById('scanProgress').style.display = 'none';
+                return null;
+            })
+            .then(response => {
+                if (!response) return null;
+                return response.json();
+            })
+            .then(result => {
+                if (!result) return;
+                console.log('扫描结果:', result);
+                if (result.success) {
+                    currentTaskId = result.scan_task_id;
+                    startLogMonitoring();
+                } else {
+                    alert('扫描启动失败: ' + (result.error || JSON.stringify(result)));
+                    document.getElementById('scanForm').style.display = 'block';
+                    document.getElementById('scanProgress').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('扫描请求失败:', error);
+                alert('扫描请求失败: ' + error);
+            });
+        });
+        
+        function startLogMonitoring() {
+            logInterval = setInterval(() => {
+                fetch(`/api/v1/scans/${currentTaskId}/logs/?last_line=${lastLine}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('scanStatus').textContent = data.status;
+                        
+                        if (data.logs && data.logs.length > 0) {
+                            const container = document.getElementById('logContainer');
+                            data.logs.forEach(log => {
+                                const div = document.createElement('div');
+                                div.textContent = log;
+                                container.appendChild(div);
+                            });
+                            container.scrollTop = container.scrollHeight;
+                            lastLine = data.total_lines;
+                        }
+                        
+                        if (!data.is_running) {
+                            clearInterval(logInterval);
+                            if (data.status === 'completed') {
+                                document.getElementById('viewResults').style.display = 'inline-block';
+                            }
+                        }
+                    });
+            }, 2000);
+        }
+        
+        function toggleLogs() {
+            const container = document.getElementById('logContainer');
+            const toggle = document.getElementById('logToggle');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                toggle.textContent = '隐藏日志';
+            } else {
+                container.style.display = 'none';
+                toggle.textContent = '显示日志';
+            }
+        }
+        
+        function viewResults() {
+            window.open(`/admin/core/project/${currentProjectId}/change/`, '_blank');
+        }
+        
+        function checkQueue() {
+            fetch('/api/v1/statistics/queue_status/')
+                .then(response => response.json())
+                .then(data => {
+                    alert(`队列状态:\n待处理任务: ${data.queue_size}\n当前任务: ${data.current_task || '无'}\n工作线程: ${data.worker_running ? '运行中' : '停止'}`);
+                });
+        }
+    </script>
+</body>
+</html>

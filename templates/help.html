@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用说明 - 智能代码安全分析平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; }
+        .help-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 0; }
+        .help-content { padding: 40px 0; }
+        .feature-card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .feature-icon { font-size: 2.5rem; color: #667eea; margin-bottom: 20px; }
+        .step-number { background: #667eea; color: white; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; }
+        .code-block { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; font-family: 'Courier New', monospace; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <div class="help-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="bi bi-book"></i> 使用说明</h1>
+                    <p class="lead">智能代码安全分析平台完整使用指南</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-house"></i> 返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 内容 -->
+    <div class="help-content">
+        <div class="container">
+            <!-- 快速开始 -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card feature-card">
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-rocket-takeoff feature-icon"></i>
+                                <h2>快速开始</h2>
+                                <p class="text-muted">3分钟完成第一次安全扫描</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <span class="step-number">1</span>
+                                        <div>
+                                            <h5>访问快速扫描</h5>
+                                            <p class="text-muted">点击导航栏"快速扫描"按钮</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <span class="step-number">2</span>
+                                        <div>
+                                            <h5>输入Git地址</h5>
+                                            <p class="text-muted">填写项目的Git仓库地址</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <span class="step-number">3</span>
+                                        <div>
+                                            <h5>开始扫描</h5>
+                                            <p class="text-muted">系统自动扫描并生成报告</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核心功能 -->
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-lightning feature-icon"></i>
+                            <h3>快速扫描</h3>
+                            <p><strong>访问:</strong> <code>/api/quick-scan/</code></p>
+                            <ul>
+                                <li>输入Git仓库地址自动扫描</li>
+                                <li>支持自定义编译命令</li>
+                                <li>自动创建部门和项目</li>
+                                <li>实时查看扫描日志</li>
+                            </ul>
+                            <div class="code-block">
+                                <strong>支持的项目类型:</strong><br>
+                                • Java (Maven/Gradle)<br>
+                                • JavaScript (NPM/Yarn)<br>
+                                • 自动语言检测
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-gear feature-icon"></i>
+                            <h3>管理后台</h3>
+                            <p><strong>访问:</strong> <code>/admin/</code></p>
+                            <ul>
+                                <li>部门和项目管理</li>
+                                <li>漏洞查看和处理</li>
+                                <li>扫描任务监控</li>
+                                <li>系统配置管理</li>
+                            </ul>
+                            <div class="code-block">
+                                <strong>漏洞状态管理:</strong><br>
+                                • 已验证 • 误报 • 已修复<br>
+                                • 风险接受 • 重复 • 超出范围
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-graph-up feature-icon"></i>
+                            <h3>统计看板</h3>
+                            <p><strong>访问:</strong> <code>/dashboard/</code></p>
+                            <ul>
+                                <li>全局安全态势概览</li>
+                                <li>部门和项目统计</li>
+                                <li>漏洞趋势分析</li>
+                                <li>SLA合规监控</li>
+                            </ul>
+                            <div class="code-block">
+                                <strong>评分体系:</strong><br>
+                                基于CWE Top 25 2024 + OWASP Top 10 2025<br>
+                                三级分级: 高危/中危/低危
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-robot feature-icon"></i>
+                            <h3>AI智能分析</h3>
+                            <p><strong>集成:</strong> Amazon Q AI</p>
+                            <ul>
+                                <li>智能风险评估</li>
+                                <li>精准修复建议</li>
+                                <li>安全防范指导</li>
+                                <li>中文翻译服务</li>
+                            </ul>
+                            <div class="code-block">
+                                <strong>AI功能:</strong><br>
+                                • 单个漏洞分析<br>
+                                • 批量漏洞分析<br>
+                                • 自动翻译描述
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 编译配置 -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card feature-card">
+                        <div class="card-body">
+                            <i class="bi bi-tools feature-icon"></i>
+                            <h3>编译命令配置</h3>
+                            <p>支持自定义项目编译命令，适应不同项目需求</p>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>默认命令</h5>
+                                    <div class="code-block">
+                                        <strong>Java:</strong><br>
+                                        mvn clean compile -DskipTests<br><br>
+                                        <strong>JavaScript:</strong><br>
+                                        npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>自定义示例</h5>
+                                    <div class="code-block">
+                                        <strong>Gradle项目:</strong><br>
+                                        ./gradlew build -x test --parallel<br><br>
+                                        <strong>Yarn项目:</strong><br>
+                                        yarn install --ignore-scripts --ignore-engines
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API接口 -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card feature-card">
+                        <div class="card-body">
+                            <i class="bi bi-code-slash feature-icon"></i>
+                            <h3>API接口</h3>
+                            <p><strong>文档地址:</strong> <code>/api/docs/</code></p>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>主要端点</h5>
+                                    <div class="code-block">
+                                        GET /api/v1/projects/ - 项目列表<br>
+                                        POST /api/v1/projects/{id}/auto_scan/ - 自动扫描<br>
+                                        GET /api/v1/findings/ - 漏洞列表<br>
+                                        GET /api/v1/statistics/overview/ - 统计概览
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>扫描监控</h5>
+                                    <div class="code-block">
+                                        GET /api/v1/scans/ - 扫描任务<br>
+                                        GET /api/v1/scans/{id}/logs/ - 扫描日志<br>
+                                        POST /api/v1/scans/{id}/kill_task/ - 终止任务<br>
+                                        GET /api/v1/statistics/queue_status/ - 队列状态
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 常见问题 -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card feature-card">
+                        <div class="card-body">
+                            <i class="bi bi-question-circle feature-icon"></i>
+                            <h3>常见问题</h3>
+                            
+                            <div class="accordion" id="faqAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                            如何处理扫描失败的问题？
+                                        </button>
+                                    </h2>
+                                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            <ol>
+                                                <li>检查Git地址是否正确且可访问</li>
+                                                <li>确认项目编译命令是否正确</li>
+                                                <li>查看扫描日志获取详细错误信息</li>
+                                                <li>检查系统资源和网络连接</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                            如何自定义编译命令？
+                                        </button>
+                                    </h2>
+                                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            <p>有两种方式设置编译命令：</p>
+                                            <ol>
+                                                <li><strong>快速扫描页面:</strong> 在"编译命令"输入框中填写</li>
+                                                <li><strong>项目管理:</strong> 在Admin后台项目编辑页面设置</li>
+                                            </ol>
+                                            <p>留空则使用对应语言的默认命令。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                            漏洞评分是如何计算的？
+                                        </button>
+                                    </h2>
+                                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            <p>采用基于CWE Top 25 2024和OWASP Top 10 2025的三要素评分体系：</p>
+                                            <ul>
+                                                <li><strong>CWE权重:</strong> 根据CWE在Top 25中的排名</li>
+                                                <li><strong>OWASP权重:</strong> 对应OWASP Top 10分类的权重</li>
+                                                <li><strong>CVSS校准:</strong> 结合CVSS基础分数</li>
+                                            </ul>
+                                            <p>最终分为三级：高危、中危、低危</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+            <p>&copy; 2025 智能代码安全分析平台. 基于 CWE Top 25 2024 + OWASP Top 10 2025 + Amazon Q AI</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

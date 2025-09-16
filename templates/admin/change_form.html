@@ -1,0 +1,17 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const h1 = document.querySelector('#content h1');
+    if (h1) {
+        const btn = document.createElement('button');
+        btn.innerHTML = '← 返回';
+        btn.style.cssText = 'margin-left: 15px; padding: 6px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; font-size: 13px; cursor: pointer;';
+        btn.onclick = function() { history.back(); };
+        h1.appendChild(btn);
+    }
+});
+</script>
+{% endblock %}

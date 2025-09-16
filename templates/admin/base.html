@@ -1,0 +1,407 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+        /* 基础样式重置 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+        }
+        
+        /* 修复隐藏字段的字体颜色问题 */
+        .collapse-toggle, .collapse-toggle:link, .collapse-toggle:visited {
+            color: #495057 !important;
+            text-decoration: none;
+        }
+        
+        .collapse-toggle:hover {
+            color: #667eea !important;
+        }
+        
+        /* 修复左侧折叠按钮颜色 - 调整为更浅的颜色 */
+        .collapse {
+            border-left: 3px solid #e9ecef !important;
+        }
+        
+        .collapse.collapsed {
+            border-left: 3px solid #f8f9fa !important;
+        }
+        
+        .collapse h2 {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+            color: #6c757d !important;
+        }
+        
+        .collapse.collapsed h2 {
+            background: #fdfdfd !important;
+            color: #adb5bd !important;
+        }
+        
+        .collapse h2:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
+            color: #495057 !important;
+        }
+        
+        /* 头部样式优化 - 简洁的白纸黑字风格 */
+        #header {
+            background: #ffffff;
+            padding: 15px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        #branding {
+            float: left;
+            margin-left: 30px;
+        }
+        
+        #branding h1 {
+            font-size: 24px;
+            font-weight: 400;
+            color: #212529 !important;
+            margin: 0;
+            padding: 8px 0;
+        }
+        
+        #branding h1 a {
+            color: #212529 !important;
+            text-decoration: none;
+        }
+        
+        #branding h1 a:hover {
+            color: #212529 !important;
+            text-decoration: none;
+        }
+        
+        /* 确保所有标题文字都是黑色 */
+        #branding, #branding * {
+            color: #212529 !important;
+        }
+        
+        /* 用户工具栏优化 - 确保文字是黑色 */
+        #user-tools {
+            float: right;
+            margin-right: 30px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #212529;
+        }
+        
+        #user-tools a {
+            color: #212529 !important;
+            text-decoration: none;
+            margin-left: 15px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+        
+        #user-tools a:hover {
+            background: #e9ecef;
+            color: #212529 !important;
+            text-decoration: none;
+        }
+        
+        /* 确保用户工具栏中的所有文本都是黑色 */
+        #user-tools, #user-tools * {
+            color: #212529 !important;
+        }
+        
+        /* 修复admin首页布局 - 确保内容不跑到右上角 */
+        .dashboard #content {
+            width: 100% !important;
+            float: none !important;
+            margin: 0 !important;
+        }
+        
+        .dashboard .main {
+            padding: 25px;
+            max-width: none;
+        }
+        
+        .dashboard .module {
+            width: 100% !important;
+            float: none !important;
+            margin-bottom: 25px;
+        }
+        
+        /* 主内容区域优化 */
+        .main {
+            padding: 25px;
+            max-width: none;
+        }
+        
+        #content {
+            margin-left: 0;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .colM, .colMS {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+        }
+        
+        /* 面包屑导航优化 */
+        .breadcrumbs {
+            background: #ffffff;
+            padding: 12px 25px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+            margin-bottom: 0;
+            color: #6c757d;
+        }
+        
+        /* 按钮样式优化 - 简洁的灰色风格 */
+        .button, input[type=submit], input[type=button], .submit-row input, button {
+            background: #6c757d;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, button:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* 可点击链接使用蓝色 - 和phpinfo-use一样的颜色 */
+        .breadcrumbs a, a:link, a:visited {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        
+        .breadcrumbs a:hover, a:hover {
+            color: #004499;
+            text-decoration: underline;
+        }
+        
+        /* 修复折叠按钮 - 简洁的灰色风格 */
+        .collapse-toggle, .collapse-toggle:link, .collapse-toggle:visited {
+            color: #495057 !important;
+            text-decoration: none;
+        }
+        
+        .collapse-toggle:hover {
+            color: #0066cc !important;
+        }
+        
+        /* 修复左侧折叠按钮 - 简洁的灰色风格 */
+        .collapse {
+            border-left: 3px solid #f8f9fa !important;
+        }
+        
+        .collapse.collapsed {
+            border-left: 3px solid #f8f9fa !important;
+        }
+        
+        .collapse h2 {
+            background: #f8f9fa !important;
+            color: #495057 !important;
+        }
+        
+        .collapse.collapsed h2 {
+            background: #fdfdfd !important;
+            color: #6c757d !important;
+        }
+        
+        .collapse h2:hover {
+            background: #e9ecef !important;
+            color: #212529 !important;
+        }
+        
+        /* 表格样式优化 - 删除左侧纯色条纹 */
+        .results {
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: white;
+            border: none !important;
+        }
+        
+        .results th {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 12px 15px;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 13px;
+            text-align: left;
+            border-left: none !important;
+            border-right: 1px solid #dee2e6;
+        }
+        
+        .results th:first-child {
+            border-left: none !important;
+        }
+        
+        .results th:last-child {
+            border-right: none !important;
+        }
+        
+        .results td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #495057;
+            font-size: 13px;
+            vertical-align: top;
+            word-wrap: break-word;
+            max-width: 200px;
+            border-left: none !important;
+            border-right: none !important;
+        }
+        
+        .results tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .results tr:nth-child(even) {
+            background: #fdfdfd;
+        }
+        
+        .results tr:nth-child(even):hover {
+            background: #f8f9fa;
+        }
+        
+        /* 删除所有左侧边框条纹 */
+        .results, .results th, .results td, .module, fieldset {
+            border-left: none !important;
+        }
+        
+        /* 模块样式优化 */
+        .module {
+            margin-bottom: 25px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            background: white;
+            border: 1px solid #dee2e6 !important;
+            border-left: none !important;
+        }
+        
+        .module h2 {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .module table {
+            width: 100%;
+            margin: 0;
+            table-layout: auto;
+        }
+        
+        .module th, .module td {
+            padding: 12px 15px;
+            font-size: 13px;
+            color: #495057;
+        }
+        
+        .module th {
+            background: #f8f9fa;
+            font-weight: 600;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .module tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* 表单样式优化 */
+        fieldset {
+            margin: 15px 0;
+            padding: 20px;
+            border: 1px solid #dee2e6 !important;
+            border-left: none !important;
+            border-radius: 6px;
+            background: #fdfdfd;
+        }
+        
+        fieldset h2 {
+            background: #f8f9fa;
+            color: #495057 !important;
+            font-size: 15px;
+            margin: -15px -15px 15px -15px;
+            padding: 12px 15px;
+            border-radius: 4px 4px 0 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        /* 按钮样式优化 - 与头部颜色保持一致 */
+        .button, input[type=submit], input[type=button], .submit-row input, button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(79, 172, 254, 0.2);
+        }
+        
+        .button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .main, .dashboard .main {
+                padding: 15px;
+            }
+            
+            #user-tools {
+                float: none;
+                text-align: center;
+                margin: 10px 0;
+            }
+            
+            #user-tools a {
+                display: inline-block;
+                margin: 3px;
+            }
+            
+            #branding {
+                float: none;
+                text-align: center;
+                margin: 0;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+    {% if title %}{{ title }} | {% endif %}智能代码安全分析平台
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            智能代码安全分析平台
+        </a>
+    </h1>
+{% endblock %}

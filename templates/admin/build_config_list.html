@@ -1,0 +1,172 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}编译配置管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">编译配置管理</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addConfigModal">
+                            <i class="fas fa-plus"></i> 添加配置
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>配置名称</th>
+                                <th>编程语言</th>
+                                <th>项目类型</th>
+                                <th>编译命令</th>
+                                <th>默认配置</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for config in configs %}
+                            <tr>
+                                <td>{{ config.name }}</td>
+                                <td>{{ config.get_language_display }}</td>
+                                <td>{{ config.project_type|default:"-" }}</td>
+                                <td>
+                                    <code style="font-size: 12px;">
+                                        {{ config.build_command|truncatechars:50 }}
+                                    </code>
+                                </td>
+                                <td>
+                                    {% if config.is_default %}
+                                        <span class="badge badge-success">默认</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if config.is_active %}
+                                        <span class="badge badge-success">启用</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">禁用</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" onclick="editConfig({{ config.id }})">
+                                        <i class="fas fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteConfig({{ config.id }})">
+                                        <i class="fas fa-trash"></i> 删除
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">暂无配置</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加配置模态框 -->
+<div class="modal fade" id="addConfigModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">添加编译配置</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form id="addConfigForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>配置名称</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>编程语言</label>
+                        <select class="form-control" name="language" required>
+                            <option value="">请选择</option>
+                            <option value="java">Java</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="csharp">C#</option>
+                            <option value="cpp">C++</option>
+                            <option value="go">Go</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>项目类型</label>
+                        <input type="text" class="form-control" name="project_type" placeholder="如: maven, gradle, npm等">
+                    </div>
+                    <div class="form-group">
+                        <label>编译命令</label>
+                        <textarea class="form-control" name="build_command" rows="3" required placeholder="输入编译命令，支持环境变量如$JDK_HOME"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea class="form-control" name="description" rows="2"></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="is_default">
+                        <label class="form-check-label">设为默认配置</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editConfig(id) {
+    // 编辑配置功能
+    window.location.href = '/admin/core/buildconfig/' + id + '/change/';
+}
+
+function deleteConfig(id) {
+    if (confirm('确定要删除这个配置吗？')) {
+        fetch('/admin/core/buildconfig/' + id + '/delete/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        }).then(() => {
+            location.reload();
+        });
+    }
+}
+
+document.getElementById('addConfigForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/api/build-configs/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('保存失败: ' + data.error);
+        }
+    });
+});
+</script>
+{% endblock %}

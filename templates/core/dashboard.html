@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能代码安全分析平台 - 统计看板</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .dashboard-container { 
+            padding: 20px; 
+            max-width: 1400px; 
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .cwe-sidebar {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+        
+        .cwe-sidebar.left {
+            left: 20px;
+        }
+        
+        .cwe-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .cwe-title {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 0.9rem;
+        }
+        
+        .cwe-name {
+            font-size: 0.85rem;
+            color: #495057;
+            margin: 4px 0;
+        }
+        
+        .cwe-desc {
+            font-size: 0.8rem;
+            color: #6c757d;
+            line-height: 1.3;
+        }
+        
+        .cwe-count {
+            font-size: 0.8rem;
+            color: #dc3545;
+            font-weight: bold;
+            float: right;
+        }
+        .stats-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .critical-card { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .high-card { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .medium-card { background: linear-gradient(135deg, #ffc107, #e0a800); color: #212529; }
+        .low-card { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
+        .info-card { background: linear-gradient(135deg, #17a2b8, #138496); color: white; }
+        .total-card { background: linear-gradient(135deg, #6f42c1, #5a32a3); color: white; }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .project-item.critical { border-left-color: #dc3545; }
+        .project-item.high { border-left-color: #fd7e14; }
+        .project-item.medium { border-left-color: #ffc107; }
+        .project-item.low { border-left-color: #28a745; }
+        
+        .department-filter {
+            margin-bottom: 20px;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="bi bi-shield-check"></i> 智能代码安全分析平台</h1>
+                    <p>监控代码安全状况，保障系统安全</p>
+                </div>
+                <div>
+                    <a href="/admin/" class="btn btn-outline-light">
+                        <i class="bi bi-gear"></i> 管理后台
+                    </a>
+                    <a href="/" class="btn btn-light ms-2">
+                        <i class="bi bi-house"></i> 回到站点
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 部门过滤器 -->
+        <div class="department-filter">
+            <div class="stats-card">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5><i class="bi bi-funnel"></i> 部门筛选</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <select id="departmentSelect" class="form-select">
+                            <option value="">全部部门</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.name }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 加载状态 -->
+        <div id="loading" class="loading">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+            <p class="mt-3">正在加载统计数据...</p>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div id="statsContent" style="display: none;">
+            <!-- 总体指标 -->
+            <div class="stats-card">
+                <h5 class="mb-4"><i class="bi bi-graph-up"></i> 总体指标</h5>
+                <div class="row" id="metricsRow">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="bi bi-pie-chart"></i> 严重程度分布</h5>
+                        <div class="chart-container">
+                            <canvas id="severityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stats-card">
+                        <h5 class="mb-3"><i class="bi bi-bar-chart"></i> 高危漏洞分类</h5>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            
+            <!-- 项目列表 -->
+            <div class="stats-card">
+                <h5 class="mb-3"><i class="bi bi-folder"></i> 项目安全状况</h5>
+                <div id="projectsList">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 刷新按钮 -->
+    <button id="refreshBtn" class="btn btn-primary btn-lg refresh-btn rounded-circle">
+        <i class="bi bi-arrow-clockwise"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let charts = {};
+        let currentDepartment = '';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            
+            // 部门选择器事件
+            document.getElementById('departmentSelect').addEventListener('change', function() {
+                currentDepartment = this.value;
+                loadDashboardData();
+            });
+            
+            // 刷新按钮事件
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                this.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                this.classList.add('disabled');
+                loadDashboardData();
+            });
+            
+            // 自动刷新（每5分钟）
+            setInterval(loadDashboardData, 5 * 60 * 1000);
+        });
+
+        function loadDashboardData() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('statsContent').style.display = 'none';
+            
+            const url = `/dashboard-stats/${currentDepartment ? '?department=' + encodeURIComponent(currentDepartment) : ''}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    updateMetrics(data.metrics);
+                    updateCharts(data.charts);
+                    updateProjectsList(data.projects);
+                    
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('statsContent').style.display = 'block';
+                    
+                    // 重置刷新按钮
+                    const refreshBtn = document.getElementById('refreshBtn');
+                    refreshBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                    refreshBtn.classList.remove('disabled');
+                })
+                .catch(error => {
+                    console.error('加载数据失败:', error);
+                    document.getElementById('loading').innerHTML = 
+                        '<div class="alert alert-danger">加载数据失败，请稍后重试</div>';
+                });
+        }
+
+        function updateMetrics(metrics) {
+            const metricsRow = document.getElementById('metricsRow');
+            const severity = metrics.severity;
+            
+            metricsRow.innerHTML = `
+                <div class="col-lg-3 col-md-12 col-sm-12">
+                    <div class="metric-card total-card">
+                        <div class="metric-number">${metrics.total_findings}</div>
+                        <div class="metric-label">总漏洞</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="metric-card high-card">
+                        <div class="metric-number">${severity['高危'] || 0}</div>
+                        <div class="metric-label">高危</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="metric-card medium-card">
+                        <div class="metric-number">${severity['中危'] || 0}</div>
+                        <div class="metric-label">中危</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="metric-card low-card">
+                        <div class="metric-number">${severity['低危'] || 0}</div>
+                        <div class="metric-label">低危</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateCharts(charts) {
+            // 严重程度饼图
+            updateSeverityChart(charts.severity);
+            
+            // 分类柱状图
+            updateCategoryChart(charts.categories);
+            
+            // 更新CWE侧边栏
+            updateCWESidebars(charts.categories);
+        }
+
+        function updateSeverityChart(data) {
+            const ctx = document.getElementById('severityChart').getContext('2d');
+            
+            if (charts.severity) {
+                charts.severity.destroy();
+            }
+            
+            charts.severity = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['高危', '中危', '低危'],
+                    datasets: [{
+                        data: [
+                            data['高危'] || 0,
+                            data['中危'] || 0,
+                            data['低危'] || 0
+                        ],
+                        backgroundColor: [
+                            '#dc3545',  // 高危 - 红色
+                            '#ffc107',  // 中危 - 黄色
+                            '#28a745'   // 低危 - 绿色
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCategoryChart(data) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            if (charts.category) {
+                charts.category.destroy();
+            }
+            
+            // 处理高危漏洞的CWE数据
+            const sortedEntries = Object.entries(data)
+                .sort((a, b) => {
+                    const countA = typeof a[1] === 'object' ? a[1].count : a[1];
+                    const countB = typeof b[1] === 'object' ? b[1].count : b[1];
+                    return countB - countA;
+                })
+                .slice(0, 10);
+            
+            // 如果没有高危漏洞，显示提示信息
+            if (sortedEntries.length === 0) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#6c757d';
+                ctx.textAlign = 'center';
+                ctx.fillText('暂无高危漏洞数据', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+            
+            const labels = sortedEntries.map(([key, value]) => {
+                if (typeof value === 'object' && value.name) {
+                    return `${key}: ${value.name}`;
+                }
+                return key;
+            });
+            
+            const values = sortedEntries.map(([key, value]) => {
+                return typeof value === 'object' ? value.count : value;
+            });
+            
+            // 使用红色系颜色表示高危漏洞
+            const colors = ['#dc3545', '#c82333', '#b21e2f', '#9e1b2b', '#8a1827', '#761523', '#62121f', '#4e0f1b', '#3a0c17', '#260913'];
+            
+            charts.category = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '高危漏洞数量',
+                        data: values,
+                        backgroundColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const entry = sortedEntries[context.dataIndex];
+                                    if (typeof entry[1] === 'object' && entry[1].category) {
+                                        return `分类: ${entry[1].category}`;
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+        function updateProjectsList(projects) {
+            const projectsList = document.getElementById('projectsList');
+            
+            if (projects.length === 0) {
+                projectsList.innerHTML = '<div class="text-center text-muted">暂无项目数据</div>';
+                return;
+            }
+            
+            let html = '';
+            projects.forEach(project => {
+                html += `
+                    <div class="project-item ${project.max_severity}">
+                        <div>
+                            <strong>${project.name}</strong>
+                            <small class="text-muted ms-2">${project.department}</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-danger me-2">${project.stats['高危'] || 0}</span>
+                            <span class="badge bg-warning me-2">${project.stats['中危'] || 0}</span>
+                            <span class="badge bg-success me-2">${project.stats['低危'] || 0}</span>
+                            <strong class="ms-2">总计: ${project.total_issues}</strong>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            projectsList.innerHTML = html;
+        }
+        
+        // 更新左侧CWE解释 - 高危漏洞专用
+        function updateCWESidebars(categories) {
+            const sortedEntries = Object.entries(categories)
+                .sort((a, b) => {
+                    const countA = typeof a[1] === 'object' ? a[1].count : a[1];
+                    const countB = typeof b[1] === 'object' ? b[1].count : b[1];
+                    return countB - countA;
+                })
+                .slice(0, 6);
+            
+            createCWESidebar('left', sortedEntries);
+        }
+        
+        function createCWESidebar(side, entries) {
+            // 移除已存在的侧边栏
+            const existing = document.querySelector(`.cwe-sidebar.${side}`);
+            if (existing) existing.remove();
+            
+            if (entries.length === 0) return;
+            
+            let html = `<div class="cwe-sidebar ${side}"><h6 class="mb-3 text-center">高危漏洞分类说明</h6>`;
+            
+            entries.forEach(([key, value]) => {
+                const cweNumber = key.match(/CWE-(\d+)/)?.[1];
+                if (cweNumber && typeof value === 'object') {
+                    // 获取CWE详细信息
+                    fetch(`/api/cwe/${cweNumber}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const cwe = data.cwe_info;
+                                const item = document.querySelector(`.cwe-sidebar.${side} .cwe-placeholder-${cweNumber}`);
+                                if (item) {
+                                    item.innerHTML = `
+                                        <div class="cwe-title">${key}</div>
+                                        <div class="cwe-name">${cwe.name}</div>
+                                        <div class="cwe-desc">${cwe.description.substring(0, 80)}...</div>
+                                        <div class="cwe-count">${value.count}个</div>
+                                    `;
+                                }
+                            }
+                        });
+                    
+                    html += `<div class="cwe-item cwe-placeholder-${cweNumber}">加载中...</div>`;
+                }
+            });
+            
+            html += '</div>';
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
+        
+
+        
+
+    </script>
+</body>
+</html>

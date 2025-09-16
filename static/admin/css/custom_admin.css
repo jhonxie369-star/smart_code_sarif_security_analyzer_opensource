@@ -1,0 +1,194 @@
+/* 自定义Django Admin样式 - 优化界面布局 */
+
+/* 头部样式优化 */
+#header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+#branding {
+    float: left;
+    margin-left: 20px;
+}
+
+#branding h1 {
+    font-size: 28px;
+    font-weight: 300;
+    color: white;
+    margin: 0;
+    padding: 10px 0;
+}
+
+#branding h1 a {
+    color: white;
+    text-decoration: none;
+}
+
+/* 用户工具栏优化 - 不再挤在右上角 */
+#user-tools {
+    float: right;
+    margin-right: 20px;
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+#user-tools a {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    margin-left: 20px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.1);
+}
+
+#user-tools a:hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+/* 主内容区域优化 */
+.main {
+    padding: 30px;
+    max-width: none;
+}
+
+#content {
+    margin-left: 0;
+    padding: 0;
+}
+
+/* 面包屑导航优化 */
+.breadcrumbs {
+    background: #f8f9fa;
+    padding: 15px 30px;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.breadcrumbs a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    color: #764ba2;
+}
+
+/* 模块列表优化 */
+#content-main {
+    width: 100%;
+    float: none;
+}
+
+.module {
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.module h2 {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px 25px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: #495057;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.module table {
+    width: 100%;
+    margin: 0;
+}
+
+.module th, .module td {
+    padding: 15px 25px;
+    font-size: 15px;
+}
+
+.module th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+.module tr:hover {
+    background: #f8f9fa;
+}
+
+/* 按钮样式优化 */
+.button, input[type=submit], input[type=button], .submit-row input, button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+/* 表单样式优化 */
+.form-row {
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+fieldset {
+    margin: 20px 0;
+    padding: 25px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+fieldset h2 {
+    background: none;
+    color: #495057;
+    font-size: 18px;
+    margin: -10px -10px 20px -10px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 6px 6px 0 0;
+}
+
+/* 表格样式优化 */
+.results {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.results th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    font-weight: 500;
+}
+
+.results td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.results tr:hover {
+    background: #f8f9fa;
+}

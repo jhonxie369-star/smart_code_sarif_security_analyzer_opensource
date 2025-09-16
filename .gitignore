@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Project specific
+workspace/reports/*
+workspace/projects/*
+workspace/scan_temp/*
+logs/*.log
+tools/codeql/
+tools/codeql-rules/
+tools/jdk/
+uploads/*
+exports/*
+
+# Keep directory structure
+!workspace/reports/.gitkeep
+!workspace/projects/.gitkeep
+!workspace/scan_temp/.gitkeep
+!logs/.gitkeep
+!uploads/.gitkeep
+!exports/.gitkeep
