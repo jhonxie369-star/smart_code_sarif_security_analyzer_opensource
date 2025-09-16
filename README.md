@@ -56,10 +56,6 @@ cd smart_security_analyzer_opensource
 ./platform.sh status     # 查看状态
 ./platform.sh logs       # 查看日志
 
-# 数据管理
-./platform.sh init       # 初始化数据
-./platform.sh import     # 导入报告
-./platform.sh clean      # 清理数据
 ```
 
 ## 🔧 扫描工具配置 (可选)
