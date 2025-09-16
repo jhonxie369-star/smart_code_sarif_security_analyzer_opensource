@@ -98,14 +98,6 @@ smart_security_analyzer/
 - [项目开发指南](PROJECT_DEVELOPMENT_GUIDE.md)
 - [构建配置说明](BUILD_CONFIG_USAGE.md)
 
-## 🤝 贡献
-
-欢迎提交Issue和Pull Request！
-
-## 📄 许可证
-
-MIT License
-
 ## 🎯 使用指南
 
 ### 快速扫描
@@ -192,12 +184,12 @@ workspace/
 ```
 workspace/
 ├── reports/
-│   └── cyber/
-│       └── balance-server/
-│           └── balance-server_codeql_report_20250708.sarif
-└── projects/
-    └── cyber/
-        └── balance-server/
+│   └── 111/
+│       └── 123/
+│           └── 123_report_20250708.sarif
+└── 111/
+    └── 123/
+        └── 124/
             ├── src/main/java/
             ├── pom.xml
             └── README.md
