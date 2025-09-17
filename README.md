@@ -73,6 +73,11 @@ cd smart_security_analyzer_opensource
 pip install semgrep
 ```
 
+###jdk自行软链
+```
+ln -s /usr/lib/jvm/java-8-openjdk-amd64 /tools/jdk
+```
+
 ## 📁 目录结构
 
 ```
